@@ -16,7 +16,7 @@
     ],
     "require": {
         "php": "^7.0",
-        "tokenly/substation-client": "^0.4.1",
+        "tokenly/substation-client": "^0.5.2",
         "tokenly/crypto-quantity": "^2"
     },
     "require-dev": {
