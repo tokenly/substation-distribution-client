@@ -50,14 +50,27 @@ class SubstationDistributionClient
 
     public function loadTXOInfoFromSubstation($wallet_uuid, $address_uuid, CryptoQuantity $prime_quantity)
     {
-        $txos_response = $this->substation_client->getTXOsById($wallet_uuid, $address_uuid);
+        // collect all items from a paged response
+        $current_page = 0;
+        $all_txo_items = [];
+        while (true) {
+            $txos_response = $this->substation_client->getTXOsById($wallet_uuid, $address_uuid, $current_page);
+            $all_txo_items = array_merge($all_txo_items, $txos_response['items']);
+
+            // \Illuminate\Support\Facades\Log::debug("loaded TXOs page ".($current_page+1)." of {$txos_response['pageCount']}");
+            if ($current_page >= $txos_response['pageCount'] - 1) {
+                break;
+            }
+            ++$current_page;
+        }
+        // \Illuminate\Support\Facades\Log::debug("loaded ".count($all_txo_items)." txos");
 
         $prime_quantity_string = $prime_quantity->getSatoshisString();
 
         $unspent_non_prime_quantity = CryptoQuantity::fromSatoshis(0);
 
         $primes = [];
-        foreach ($txos_response['items'] as $txo) {
+        foreach ($all_txo_items as $txo) {
             $is_prime = false;
             if (!$txo['spent'] and (string) $txo['amount'] === $prime_quantity_string) {
                 $is_prime = true;
