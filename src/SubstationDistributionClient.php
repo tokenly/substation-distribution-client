@@ -58,7 +58,7 @@ class SubstationDistributionClient
             $all_txo_items = array_merge($all_txo_items, $txos_response['items']);
 
             // \Illuminate\Support\Facades\Log::debug("loaded TXOs page ".($current_page+1)." of {$txos_response['pageCount']}");
-            if ($current_page >= $txos_response['pageCount'] - 1) {
+            if (isset($txos_response['pageCount']) AND $current_page >= $txos_response['pageCount'] - 1) {
                 break;
             }
             ++$current_page;
